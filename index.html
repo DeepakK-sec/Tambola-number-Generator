@@ -1,1 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tambola Number Generator</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            color: white;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(to bottom, #1e3c72, #2a5298); /* Nice blue gradient */
+            min-height: 100vh;
+            background-image: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80'); /* Festive lights background */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        h1 {
+            font-size: 3em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            margin-bottom: 10px;
+        }
+        #numberDisplay {
+            font-size: 8em;
+            font-weight: bold;
+            margin: 50px auto;
+            width: 300px;
+            height: 300px;
+            line-height: 300px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            border: 10px solid rgba(255,255,255,0.4);
+            box-shadow: 0 0 20px rgba(255,255,255,0.5);
+            text-shadow: 4px 4px 8px rgba(0,0,0,0.8);
+        }
+        button {
+            padding: 15px 40px;
+            font-size: 1.5em;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: background 0.3s;
+            margin-top: 20px;
+        }
+        button:hover {
+            background: #ff5252;
+        }
+        #history {
+            margin-top: 40px;
+            font-size: 1.2em;
+        }
+        #calledNumbers {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            max-width: 800px;
+            margin: 20px auto;
+        }
+        .called {
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+            font-weight: bold;
+        }
+        #nickname {
+            font-size: 2em;
+            margin: 20px;
+            min-height: 60px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+        }
+    </style>
+</head>
+<body>
+    <h1>Tambola Number Generator</h1>
+    <p>(Numbers 1 to 90 - Click button for next number)</p>
+    <div id="numberDisplay">--</div>
+    <div id="nickname"></div>
+    <button id="generateBtn">Generate Next Number</button>
+    <div id="history">
+        <h2>Called Numbers</h2>
+        <div id="calledNumbers"></div>
+    </div>
 
+    <script>
+        const nicknames = {
+            1: "Lone Ranger / Kelly's Eye",
+            2: "One Little Duck / Me and You",
+            3: "Cup of Tea / Happy Family",
+            4: "Knock at the Door / Murgi Chor",
+            5: "Man Alive / Hum Panch",
+            6: "Half a Dozen / In a Fix",
+            7: "Lucky Seven / God's in Heaven",
+            8: "Garden Gate / One Fat Lady",
+            9: "Doctor's Orders",
+            10: "Downing Street",
+            11: "Legs Eleven",
+            12: "One Dozen",
+            13: "Unlucky for Some",
+            14: "Valentine's Day",
+            15: "Young and Keen",
+            16: "Sweet Sixteen",
+            17: "Dancing Queen",
+            18: "Coming of Age",
+            19: "Goodbye Teens",
+            20: "One Score",
+            21: "Key of the Door / Royal Salute",
+            22: "Two Little Ducks",
+            23: "Thee and Me",
+            24: "Two Dozen",
+            25: "Duck and Dive",
+            26: "Pick and Mix",
+            27: "Gateway to Heaven",
+            28: "Over Weight",
+            29: "Rise and Shine",
+            30: "Dirty Gertie",
+            31: "Get Up and Run",
+            32: "Buckle My Shoe",
+            33: "Dirty Knee",
+            34: "Ask for More",
+            35: "Jump and Jive",
+            36: "Three Dozen",
+            37: "More than Eleven",
+            38: "Christmas Cake",
+            39: "Steps",
+            40: "Naughty Forty",
+            41: "Time for Fun",
+            42: "Winnie the Pooh",
+            43: "Down on Your Knees",
+            44: "Droopy Drawers",
+            45: "Halfway There",
+            46: "Up to Tricks",
+            47: "Four and Seven",
+            48: "Four Dozen",
+            49: "PC",
+            50: "Half a Century / Bull's Eye",
+            51: "Tweak of the Thumb",
+            52: "Danny La Rue",
+            53: "Stuck in the Tree",
+            54: "Clean the Floor",
+            55: "Snakes Alive",
+            56: "Shotts Bus",
+            57: "Heinz Varieties",
+            58: "Make Them Wait",
+            59: "Brighton Line",
+            60: "Five Dozen / Grandma's Getting Frisky",
+            61: "Baker's Bun",
+            62: "Turn the Screw",
+            63: "Tickle Me",
+            64: "Red Raw",
+            65: "Old Age Pension",
+            66: "Clickety Click",
+            67: "Made in Heaven",
+            68: "Saving Grace",
+            69: "Anyway Up",
+            70: "Three Score and Ten",
+            71: "Bang on the Drum",
+            72: "Danny La Rue (again)",
+            73: "Queen Bee",
+            74: "Candy Store",
+            75: "Strive and Strive",
+            76: "Trombones",
+            77: "Sunset Strip",
+            78: "Heaven's Gate",
+            79: "One More Time",
+            80: "Gandhi's Breakfast / Eight and Blank",
+            81: "Stop and Run / Corner Shot",
+            82: "Straight On Through",
+            83: "Time for Tea",
+            84: "Seven Dozen",
+            85: "Staying Alive",
+            86: "Between the Sticks",
+            87: "Torquay in Devon",
+            88: "Two Fat Ladies",
+            89: "Nearly There",
+            90: "Top of the Shop / Blind 90"
+        };
+
+        let available = Array.from({length: 90}, (_, i) => i + 1);
+        let called = [];
+
+        const display = document.getElementById('numberDisplay');
+        const nicknameEl = document.getElementById('nickname');
+        const calledContainer = document.getElementById('calledNumbers');
+        const btn = document.getElementById('generateBtn');
+
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 0.9;
+                utterance.pitch = 1;
+                utterance.volume = 1;
+                // Optional: choose a voice (uncomment to select specific)
+                // const voices = speechSynthesis.getVoices();
+                // utterance.voice = voices.find(v => v.lang.startsWith('en') || v.lang.startsWith('hi'));
+                speechSynthesis.speak(utterance);
+            } else {
+                alert('Speech synthesis not supported in your browser.');
+            }
+        }
+
+        btn.addEventListener('click', () => {
+            if (available.length === 0) {
+                display.textContent = 'Done!';
+                nicknameEl.textContent = 'All numbers called!';
+                speak('All numbers have been called.');
+                btn.disabled = true;
+                return;
+            }
+
+            const randomIndex = Math.floor(Math.random() * available.length);
+            const num = available.splice(randomIndex, 1)[0];
+            called.push(num);
+
+            display.textContent = num;
+            const nick = nicknames[num] || '';
+            nicknameEl.textContent = nick;
+            
+            let speakText = `${num}`;
+            if (nick) {
+                speakText = `${nick}, number ${num}`;
+            }
+            speak(speakText);
+
+            const span = document.createElement('span');
+            span.className = 'called';
+            span.textContent = num;
+            calledContainer.appendChild(span);
+        });
+
+        // Initial message
+        speak('Welcome to Tambola Number Generator. Click the button to start.');
+    </script>
+</body>
+</html>
