@@ -11,9 +11,9 @@
             color: white;
             margin: 0;
             padding: 20px;
-            background: linear-gradient(to bottom, #1e3c72, #2a5298); /* Nice blue gradient */
+            background: linear-gradient(to bottom, #1e3c72, #2a5298);
             min-height: 100vh;
-            background-image: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80'); /* Festive lights background */
+            background-image: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -36,6 +36,9 @@
             box-shadow: 0 0 20px rgba(255,255,255,0.5);
             text-shadow: 4px 4px 8px rgba(0,0,0,0.8);
         }
+        .buttons {
+            margin: 30px;
+        }
         button {
             padding: 15px 40px;
             font-size: 1.5em;
@@ -46,10 +49,16 @@
             cursor: pointer;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             transition: background 0.3s;
-            margin-top: 20px;
+            margin: 0 15px;
         }
         button:hover {
             background: #ff5252;
+        }
+        button#clearBtn {
+            background: #4caf50;
+        }
+        button#clearBtn:hover {
+            background: #43a047;
         }
         #history {
             margin-top: 40px;
@@ -60,7 +69,7 @@
             flex-wrap: wrap;
             justify-content: center;
             gap: 10px;
-            max-width: 800px;
+            max-width: 900px;
             margin: 20px auto;
         }
         .called {
@@ -81,10 +90,15 @@
 </head>
 <body>
     <h1>Tambola Number Generator</h1>
-    <p>(Numbers 1 to 90 - Click button for next number)</p>
+    <p>(Numbers 1 to 90)</p>
     <div id="numberDisplay">--</div>
     <div id="nickname"></div>
-    <button id="generateBtn">Generate Next Number</button>
+
+    <div class="buttons">
+        <button id="generateBtn">Generate Next Number</button>
+        <button id="clearBtn">Restart Game</button>
+    </div>
+
     <div id="history">
         <h2>Called Numbers</h2>
         <div id="calledNumbers"></div>
@@ -190,29 +204,27 @@
         const display = document.getElementById('numberDisplay');
         const nicknameEl = document.getElementById('nickname');
         const calledContainer = document.getElementById('calledNumbers');
-        const btn = document.getElementById('generateBtn');
+        const generateBtn = document.getElementById('generateBtn');
+        const clearBtn = document.getElementById('clearBtn');
 
         function speak(text) {
             if ('speechSynthesis' in window) {
+                // Cancel any ongoing speech to avoid overlap
+                speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(text);
                 utterance.rate = 0.9;
                 utterance.pitch = 1;
                 utterance.volume = 1;
-                // Optional: choose a voice (uncomment to select specific)
-                // const voices = speechSynthesis.getVoices();
-                // utterance.voice = voices.find(v => v.lang.startsWith('en') || v.lang.startsWith('hi'));
                 speechSynthesis.speak(utterance);
-            } else {
-                alert('Speech synthesis not supported in your browser.');
             }
         }
 
-        btn.addEventListener('click', () => {
+        function generateNumber() {
             if (available.length === 0) {
                 display.textContent = 'Done!';
                 nicknameEl.textContent = 'All numbers called!';
                 speak('All numbers have been called.');
-                btn.disabled = true;
+                generateBtn.disabled = false; // Allow restart even when done
                 return;
             }
 
@@ -234,10 +246,25 @@
             span.className = 'called';
             span.textContent = num;
             calledContainer.appendChild(span);
-        });
+        }
 
-        // Initial message
-        speak('Welcome to Tambola Number Generator. Click the button to start.');
+        function restartGame() {
+            available = Array.from({length: 90}, (_, i) => i + 1);
+            called = [];
+
+            display.textContent = '--';
+            nicknameEl.textContent = '';
+            calledContainer.innerHTML = '';
+            generateBtn.disabled = false;
+
+            speak('Game restarted. Click Generate to start calling numbers.');
+        }
+
+        generateBtn.addEventListener('click', generateNumber);
+        clearBtn.addEventListener('click', restartGame);
+
+        // Welcome message on load
+        speak('Welcome to Tambola Number Generator. Click Generate Next Number to begin.');
     </script>
 </body>
 </html>
